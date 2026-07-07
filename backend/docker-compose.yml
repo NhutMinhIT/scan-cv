@@ -1,7 +1,7 @@
 services:
   cv-scanner:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
     container_name: cv-scanner-hr
     ports:
@@ -11,7 +11,7 @@ services:
     environment:
       DATA_DIR: /app/data
     volumes:
-      - ./backend/data:/app/data
+      - ./data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/')"]
