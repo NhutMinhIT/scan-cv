@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Scanner HR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --primary: #4f46e5;
+      --primary-light: #eef2ff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --success: #059669;
+      --danger: #dc2626;
+      --radius: 14px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; min-height: 100vh; }
+
+    /* TOPBAR */
+    .topbar {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 0 24px; display: flex; align-items: center; gap: 16px;
+      height: 60px; box-shadow: 0 2px 12px rgba(79,70,229,.3);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-logo { font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .topbar-logo span { background: rgba(255,255,255,.2); border-radius: 8px; padding: 2px 8px; font-size: .75rem; font-weight: 600; }
+    .topbar-sub { color: rgba(255,255,255,.65); font-size: .8rem; margin-left: auto; }
+
+    /* LAYOUT */
+    .layout { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+    .main-stack { display: flex; flex-direction: column; gap: 16px; }
+
+    /* CARD */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; background: #fafafa; }
+    .card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .ci-indigo { background: #eef2ff; }
+    .ci-amber  { background: #fffbeb; }
+    .ci-sky    { background: #f0f9ff; }
+    .card-header h2 { font-size: .9375rem; font-weight: 600; }
+    .card-body { padding: 20px; }
+
+    /* UPLOAD */
+    .dropzone {
+      border: 2px dashed #c7d2fe; border-radius: 12px; padding: 48px 24px;
+      text-align: center; cursor: pointer; transition: all .2s;
+      background: linear-gradient(135deg, #fafafe 0%, #f0f2ff 100%);
+    }
+    .dropzone:hover, .dropzone.dragover { border-color: var(--primary); background: #eef2ff; transform: translateY(-1px); }
+    .dropzone input { display: none; }
+    .dz-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .dz-title { font-weight: 600; font-size: .9375rem; }
+    .dz-title strong { color: var(--primary); }
+    .dz-hint { color: var(--muted); font-size: .8125rem; margin-top: 6px; }
+    .dz-file { margin-top: 12px; font-size: .8125rem; color: var(--primary); font-weight: 500; background: var(--primary-light); padding: 4px 12px; border-radius: 999px; display: inline-block; }
+
+    /* PROFILE HERO */
+    .profile-hero {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 24px 20px; display: flex; align-items: center; gap: 16px;
+      position: relative; overflow: hidden;
+    }
+    .profile-hero::after { content: ''; position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.06); }
+    .avatar { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: #fff; border: 2px solid rgba(255,255,255,.4); flex-shrink: 0; }
+    .profile-info h3 { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .p-title  { color: rgba(255,255,255,.8); font-size: .875rem; margin-top: 2px; }
+    .p-company { color: rgba(255,255,255,.65); font-size: .8125rem; margin-top: 4px; }
+    .profile-badges { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+    .p-badge { background: rgba(255,255,255,.2); color: #fff; padding: 2px 10px; border-radius: 999px; font-size: .75rem; font-weight: 500; }
+
+    /* STAT PILLS */
+    .stat-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .stat-pill { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+    .st-icon { font-size: 1.1rem; }
+    .st-val { font-weight: 700; color: var(--primary); font-size: .9375rem; }
+    .st-lbl { color: var(--muted); font-size: .75rem; }
+
+    /* SECTION TITLE */
+    .section-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 20px 0 10px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+    /* FORM */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 640px) { .info-grid { grid-template-columns: 1fr; } }
+    .info-row { display: flex; flex-direction: column; gap: 4px; }
+    .links-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .link-field { flex: 1; min-width: 180px; }
+    label { font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+    input, textarea { width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .9375rem; font-family: inherit; transition: border-color .2s, box-shadow .2s; background: #fff; }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* TAGS */
+    .tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; min-height: 42px; background: #fafafa; }
+    .tag       { background: #eef2ff; color: #4f46e5;  padding: 3px 11px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .tag-edu   { background: #f5f3ff; color: #6d28d9;  padding: 3px 11px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .tag-award { background: #fff7ed; color: #c2410c;  padding: 3px 11px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .tag-lang  { background: #f0fdf4; color: #15803d;  padding: 3px 11px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .tag-cert  { background: #fffbeb; color: #92400e;  padding: 3px 11px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .tag-kw    { background: #f0f9ff; color: #0369a1;  padding: 3px 11px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .empty-tag { color: var(--muted); font-size: .8125rem; font-style: italic; }
+
+    /* TIMELINE SUMMARY */
+    .timeline { display: flex; flex-direction: column; }
+    .tl-item { display: flex; }
+    .tl-left { display: flex; flex-direction: column; align-items: center; width: 28px; flex-shrink: 0; padding-top: 6px; }
+    .tl-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary); flex-shrink: 0; border: 2.5px solid #fff; box-shadow: 0 0 0 2px var(--primary); }
+    .tl-line { flex: 1; width: 2px; background: #e0e7ff; margin-top: 6px; min-height: 16px; }
+    .tl-content { flex: 1; padding: 0 0 16px 8px; }
+
+    /* WORK CARD */
+    .work-card {
+      border: 1.5px solid #e0e7ff; border-radius: 10px; overflow: hidden;
+      box-shadow: 0 1px 4px rgba(79,70,229,.07);
+    }
+    .work-card-header {
+      background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
+      padding: 12px 14px;
+      display: flex; flex-wrap: wrap; gap: 8px;
+      align-items: center; justify-content: space-between;
+    }
+    .work-company {
+      font-weight: 700; font-size: .9375rem; color: #312e81;
+    }
+    .work-period {
+      font-size: .75rem; color: var(--muted);
+      background: #fff; border: 1px solid #e0e7ff;
+      padding: 2px 8px; border-radius: 999px; white-space: nowrap;
+    }
+    .work-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .work-position {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #4f46e5; color: #fff;
+      font-size: .8rem; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+      align-self: flex-start;
+    }
+    .work-desc {
+      font-size: .875rem; line-height: 1.7; color: var(--text);
+      border-left: 3px solid #c7d2fe;
+      padding-left: 10px;
+    }
+    .work-role-item { display: flex; flex-direction: column; gap: 7px; }
+    .role-header { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .role-sep { border: none; border-top: 1.5px dashed #e0e7ff; margin: 6px 0; }
+    .work-achieve { font-size: .8rem; color: #92400e; background: #fffbeb; border-left: 3px solid #fbbf24; padding: 4px 10px; border-radius: 0 6px 6px 0; }
+    .work-project { font-size: .8rem; color: #1d4ed8; }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 80px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* CONTACT */
+    .contact-list { display: flex; flex-direction: column; gap: 10px; }
+    .contact-item { display: flex; align-items: center; gap: 10px; }
+    .contact-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: .875rem; flex-shrink: 0; }
+    .contact-val { font-size: .875rem; color: var(--text); font-weight: 500; word-break: break-all; }
+    .contact-val a { color: var(--primary); text-decoration: none; }
+    .contact-val a:hover { text-decoration: underline; }
+
+    /* BUTTONS */
+    .btn-save { width: 100%; padding: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border: none; border-radius: 10px; font-size: .9375rem; font-weight: 600; cursor: pointer; transition: all .2s; box-shadow: 0 4px 12px rgba(79,70,229,.35); }
+    .btn-save:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(79,70,229,.45); }
+    .btn-save:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-export { width: 100%; padding: 11px; background: #fff; color: var(--text); border: 1.5px solid var(--border); border-radius: 10px; font-size: .875rem; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-export:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ALERTS & TOAST */
+    .alert { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: .875rem; line-height: 1.5; }
+    .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .alert-warn  { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 20px; border-radius: 10px; color: #fff; font-size: .875rem; font-weight: 500; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; z-index: 200; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: var(--success); }
+    .toast.error   { background: var(--danger); }
+
+    /* SPINNER */
+    .spin { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #hrNote { min-height: 100px; font-size: .875rem; }
+
+    /* HR INSIGHT PANEL */
+    .insight-panel { border: 1.5px solid #e0e7ff; border-radius: 12px; overflow: hidden; margin-bottom: 4px; }
+    .insight-header { background: linear-gradient(135deg, #312e81 0%, #4f46e5 100%); padding: 12px 16px; display: flex; align-items: center; gap: 10px; }
+    .insight-header h3 { color: #fff; font-size: .875rem; font-weight: 700; }
+    .level-badge {
+      padding: 4px 12px; border-radius: 999px; font-size: .8rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .level-junior  { background: #dcfce7; color: #15803d; }
+    .level-mid     { background: #dbeafe; color: #1d4ed8; }
+    .level-senior  { background: #f3e8ff; color: #7e22ce; }
+    .level-lead    { background: #fef3c7; color: #92400e; }
+    .level-principal { background: #fce7f3; color: #be185d; }
+    .traj-badge { font-size: .75rem; padding: 3px 10px; border-radius: 999px; font-weight: 600; }
+    .traj-growing  { background: #dcfce7; color: #15803d; }
+    .traj-stable   { background: #dbeafe; color: #1d4ed8; }
+    .traj-mixed    { background: #fef3c7; color: #92400e; }
+    .traj-declining { background: #fee2e2; color: #dc2626; }
+
+    .insight-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; background: #fafafe; }
+    .insight-row { display: flex; flex-direction: column; gap: 6px; }
+    .insight-lbl { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip-strength { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .chip-concern  { background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+    .focus-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .focus-item {
+      display: flex; gap: 8px; align-items: flex-start;
+      background: #fff; border: 1px solid #e0e7ff;
+      border-radius: 8px; padding: 8px 12px;
+      font-size: .8375rem; line-height: 1.5;
+    }
+    .focus-num { background: var(--primary); color: #fff; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 700; flex-shrink: 0; }
+    .meta-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .meta-chip { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 10px; border-radius: 999px; font-size: .8125rem; font-weight: 500; }
+
+    /* INTERVIEW TRACKING */
+    .track-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .track-field { display: flex; flex-direction: column; gap: 4px; }
+    .track-field.full { grid-column: 1/-1; }
+    select { width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .875rem; font-family: inherit; background: #fff; cursor: pointer; }
+    select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+    .star-row { display: flex; gap: 4px; }
+    .star { font-size: 1.3rem; cursor: pointer; color: #d1d5db; transition: color .15s; }
+    .star.active, .star:hover { color: #f59e0b; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">📋 CV Scanner <span>HR TOOL</span></div>
+  <div class="topbar-sub">Upload → AI phân tích → Lưu & Xuất Excel</div>
+</div>
+
+<div class="layout">
+  <!-- MAIN -->
+  <div class="main-stack">
+    <div id="alertBox" style="display:none"></div>
+
+    <!-- UPLOAD -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon ci-indigo">📤</div>
+        <h2>Upload CV</h2>
+      </div>
+      <div class="card-body">
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="fileInput" accept=".pdf,.docx" />
+          <div class="dz-icon">📄</div>
+          <div class="dz-title">Kéo thả hoặc <strong>chọn file</strong></div>
+          <div class="dz-hint">Hỗ trợ .pdf và .docx — AI sẽ tự động trích xuất</div>
+          <div id="fileName"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="card" id="formSection" style="display:none">
+      <div class="profile-hero">
+        <div class="avatar" id="avatarEl">?</div>
+        <div class="profile-info">
+          <h3 id="heroName">—</h3>
+          <div class="p-title" id="heroTitle">—</div>
+          <div class="p-company" id="heroCompany"></div>
+          <div class="profile-badges" id="heroBadges"></div>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- STATS -->
+        <div class="stat-row">
+          <div class="stat-pill"><span class="st-icon">💼</span><div><div class="st-val" id="statExp">—</div><div class="st-lbl">Kinh nghiệm</div></div></div>
+          <div class="stat-pill"><span class="st-icon">🎂</span><div><div class="st-val" id="statBirth">—</div><div class="st-lbl">Năm sinh</div></div></div>
+          <div class="stat-pill"><span class="st-icon">📍</span><div><div class="st-val" id="statLoc">—</div><div class="st-lbl">Địa điểm</div></div></div>
+        </div>
+
+        <!-- HR INSIGHT PANEL -->
+        <div class="insight-panel" id="insightPanel" style="display:none">
+          <div class="insight-header">
+            <h3>🧠 Nhận định HR</h3>
+            <span id="levelBadge" class="level-badge"></span>
+            <span id="trajBadge" class="traj-badge" style="margin-left:4px"></span>
+          </div>
+          <div class="insight-body">
+            <div class="insight-row" id="insightDomain" style="display:none">
+              <div class="insight-lbl">🏭 Domain chính</div>
+              <div class="meta-row"><span class="meta-chip" id="domainChip"></span></div>
+            </div>
+            <div class="insight-row" id="insightStrengths" style="display:none">
+              <div class="insight-lbl">✅ Điểm mạnh nổi bật</div>
+              <div class="chip-row" id="strengthChips"></div>
+            </div>
+            <div class="insight-row" id="insightConcerns" style="display:none">
+              <div class="insight-lbl">⚠️ Cần chú ý</div>
+              <div class="chip-row" id="concernChips"></div>
+            </div>
+            <div class="insight-row" id="insightFocus" style="display:none">
+              <div class="insight-lbl">🎯 Gợi ý câu hỏi phỏng vấn</div>
+              <ul class="focus-list" id="focusList"></ul>
+            </div>
+            <div class="insight-row" id="insightMeta" style="display:none">
+              <div class="insight-lbl">💡 Thông tin thêm</div>
+              <div class="meta-row" id="metaChips"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Thông tin cơ bản</div>
+        <div class="info-grid">
+          <div class="info-row"><label>Họ tên</label><input id="name" /></div>
+          <div class="info-row"><label>Email</label><input id="email" type="email" /></div>
+          <div class="info-row"><label>Điện thoại</label><input id="phone" placeholder="VD: 0369269410" /></div>
+          <div class="info-row"><label>Địa điểm</label><input id="location" /></div>
+          <div class="info-row"><label>Vị trí</label><input id="title" /></div>
+          <div class="info-row"><label>Công ty hiện tại</label><input id="currentCompany" /></div>
+          <div class="info-row"><label>Năm sinh</label><input id="birthYear" type="number" placeholder="VD: 1998" /></div>
+          <div class="info-row"><label>Kinh nghiệm</label><input id="experience" placeholder="VD: 3 năm 6 tháng" /></div>
+        </div>
+
+        <div class="section-title">Liên kết</div>
+        <div class="links-row">
+          <div class="link-field info-row"><label>🔗 Facebook</label><input id="facebook" placeholder="https://facebook.com/..." /></div>
+          <div class="link-field info-row"><label>💼 LinkedIn</label><input id="linkedin" placeholder="https://linkedin.com/in/..." /></div>
+          <div class="link-field info-row"><label>🐙 GitHub</label><input id="github" placeholder="https://github.com/..." /></div>
+        </div>
+
+        <div class="section-title">🎓 Học vấn</div>
+        <div class="tags-wrap" id="educationTags"></div>
+
+        <div class="section-title">🌐 Ngôn ngữ</div>
+        <div class="tags-wrap" id="languagesTags"></div>
+
+        <div class="section-title">📜 Chứng chỉ</div>
+        <div class="tags-wrap" id="certificationsTags"></div>
+
+        <div class="section-title">🏆 Giải thưởng &amp; Thành tích</div>
+        <div class="tags-wrap" id="awardsTags"></div>
+
+        <div class="section-title">⚡ Kỹ năng</div>
+        <div class="tags-wrap" id="skillsTags"></div>
+
+        <div class="section-title">🔍 Từ khóa HR</div>
+        <div class="tags-wrap" id="keywordsTags"></div>
+
+        <div class="section-title">📊 Tóm tắt quá trình làm việc</div>
+        <div class="timeline" id="summaryList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="card" id="contactCard" style="display:none">
+      <div class="card-header">
+        <div class="card-icon ci-sky">👤</div>
+        <h2>Thông tin liên hệ</h2>
+      </div>
+      <div class="card-body">
+        <div class="contact-list" id="contactList"></div>
+      </div>
+    </div>
+
+    <div class="card" id="noteSection" style="display:none">
+      <div class="card-header">
+        <div class="card-icon ci-amber">📝</div>
+        <h2>Ghi chú HR</h2>
+      </div>
+      <div class="card-body">
+        <textarea id="hrNote" placeholder="VD: Giao tiếp tốt. Có kinh nghiệm React Native. Hẹn PV vòng 1."></textarea>
+      </div>
+    </div>
+
+    <!-- INTERVIEW TRACKING -->
+    <div class="card" id="trackSection" style="display:none">
+      <div class="card-header">
+        <div class="card-icon ci-indigo">📋</div>
+        <h2>Trạng thái phỏng vấn</h2>
+      </div>
+      <div class="card-body">
+        <div class="track-grid">
+          <div class="track-field">
+            <label>Vòng PV</label>
+            <select id="interviewRound">
+              <option value="">— Chọn —</option>
+              <option>Vòng 1</option>
+              <option>Vòng 2</option>
+              <option>Vòng 3</option>
+              <option>Offer</option>
+            </select>
+          </div>
+          <div class="track-field">
+            <label>Kết quả</label>
+            <select id="interviewResult">
+              <option value="">— Chọn —</option>
+              <option>Pass ✅</option>
+              <option>Fail ❌</option>
+              <option>Hold ⏸</option>
+              <option>Pending 🕐</option>
+            </select>
+          </div>
+          <div class="track-field full">
+            <label>Ngày phỏng vấn</label>
+            <input type="date" id="interviewDate" />
+          </div>
+          <div class="track-field full">
+            <label>Đánh giá nhanh</label>
+            <div class="star-row" id="starRow">
+              <span class="star" data-v="1">★</span>
+              <span class="star" data-v="2">★</span>
+              <span class="star" data-v="3">★</span>
+              <span class="star" data-v="4">★</span>
+              <span class="star" data-v="5">★</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="actionsSection" style="display:none; flex-direction:column; gap:10px;">
+      <button class="btn-save" id="btnSave" disabled>💾 Lưu ứng viên</button>
+      <button class="btn-export" id="btnExport">📊 Xuất Excel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  let currentFile = null, parsedData = {};
+
+  const dropzone = $("dropzone"), fileInput = $("fileInput");
+  dropzone.addEventListener("click", () => fileInput.click());
+  dropzone.addEventListener("dragover", e => { e.preventDefault(); dropzone.classList.add("dragover"); });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+  dropzone.addEventListener("drop", e => { e.preventDefault(); dropzone.classList.remove("dragover"); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+  fileInput.addEventListener("change", () => { if (fileInput.files.length) handleFile(fileInput.files[0]); });
+
+  const dropContent = dropzone.innerHTML;
+
+  function showAlert(msg, type) { const b = $("alertBox"); b.className = "alert alert-" + type; b.textContent = msg; b.style.display = ""; }
+  function hideAlert() { $("alertBox").style.display = "none"; }
+  function parseError(data) {
+    if (!data || !data.detail) return "Lỗi upload";
+    if (typeof data.detail === "string") return data.detail;
+    if (Array.isArray(data.detail)) return data.detail.map(d => d.msg).join(", ");
+    return String(data.detail);
+  }
+
+  async function handleFile(file) {
+    const ext = file.name.toLowerCase();
+    if (!ext.endsWith(".pdf") && !ext.endsWith(".docx")) return toast("Chỉ hỗ trợ PDF hoặc DOCX", "error");
+    currentFile = file;
+    hideAlert();
+    dropzone.style.pointerEvents = "none";
+    dropzone.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:16px 0"><span class="spin" style="border-color:#c7d2fe;border-top-color:#4f46e5;width:28px;height:28px;border-width:3px"></span><span style="color:#4f46e5;font-weight:600">Đang phân tích CV...</span></div>`;
+
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/cv/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(parseError(data));
+      parsedData = data.parsedData;
+      fillForm(parsedData);
+      $("formSection").style.display = "";
+      $("contactCard").style.display = "";
+      $("noteSection").style.display = "";
+      $("trackSection").style.display = "";
+      $("actionsSection").style.display = "flex";
+      $("btnSave").disabled = false;
+      if (data.warning) showAlert(data.warning, "warn");
+      toast("✅ Phân tích CV thành công", "success");
+    } catch (err) {
+      showAlert(err.message, "error");
+      toast(err.message, "error");
+    } finally {
+      resetDropzone(file.name);
+    }
+  }
+
+  function resetDropzone(name) {
+    dropzone.style.pointerEvents = "";
+    dropzone.innerHTML = dropContent;
+    if (name) $("fileName").innerHTML = `<span class="dz-file">📄 ${esc(name)}</span>`;
+    const inp = $("fileInput");
+    inp.addEventListener("change", () => { if (inp.files.length) handleFile(inp.files[0]); });
+  }
+
+  function fillForm(d) {
+    $("name").value = d.name || "";
+    $("email").value = d.email || "";
+    $("phone").value = d.phone || "";
+    $("location").value = d.location || "";
+    $("title").value = d.title || "";
+    $("currentCompany").value = d.currentCompany || "";
+    $("facebook").value = d.facebook || "";
+    $("linkedin").value = d.linkedin || "";
+    $("github").value = d.github || "";
+    $("birthYear").value = d.birthYear || "";
+
+    const expParts = [];
+    if (d.experienceYears && Number(d.experienceYears) > 0) expParts.push(d.experienceYears + " năm");
+    if (d.experienceMonths && Number(d.experienceMonths) > 0) expParts.push(d.experienceMonths + " tháng");
+    $("experience").value = expParts.join(" ");
+
+    const nameVal = d.name || "Ứng viên";
+    $("heroName").textContent = nameVal;
+    $("heroTitle").textContent = d.title || "—";
+    $("heroCompany").textContent = d.currentCompany ? "🏢 " + d.currentCompany : "";
+    $("avatarEl").textContent = initials(nameVal);
+
+    const badges = [];
+    if (expParts.length) badges.push("💼 " + expParts.join(" "));
+    if (d.birthYear) badges.push("🎂 " + d.birthYear + (d.ageSource === "estimated" ? " (ước tính)" : ""));
+    $("heroBadges").innerHTML = badges.map(b => `<span class="p-badge">${esc(b)}</span>`).join("");
+
+    $("statExp").textContent = expParts.length ? expParts.join(" ") : "—";
+    $("statBirth").textContent = d.birthYear || "—";
+    $("statLoc").textContent = d.location || "—";
+
+    renderContact(d);
+    renderTags("educationTags",      formatEduList(d.education || []),  "tag-edu");
+    renderTags("languagesTags",      d.languages || [],                 "tag-lang");
+    renderTags("certificationsTags", d.certifications || [],            "tag-cert");
+    renderTags("awardsTags",         d.awards || [],                    "tag-award");
+    renderTags("skillsTags",         d.skills || [],                    "tag");
+    renderTags("keywordsTags",       d.keywords || [],                  "tag-kw");
+    renderWorkHistory("summaryList", d.workHistory || []);
+    renderHrInsights(d.hrInsights || {});
+  }
+
+  let currentRating = 0;
+  document.querySelectorAll(".star").forEach(s => {
+    s.addEventListener("click", () => {
+      currentRating = parseInt(s.dataset.v);
+      document.querySelectorAll(".star").forEach(st => {
+        st.classList.toggle("active", parseInt(st.dataset.v) <= currentRating);
+      });
+    });
+  });
+
+  function renderHrInsights(ins) {
+    if (!ins || !ins.level) { $("insightPanel").style.display = "none"; return; }
+    $("insightPanel").style.display = "";
+
+    // Level badge
+    const lvl = (ins.level || "").toLowerCase();
+    const lvlLabel = { junior: "👶 Junior", mid: "💻 Mid-level", senior: "⭐ Senior", lead: "📈 Lead", principal: "🌟 Principal" }[lvl] || ins.level;
+    const lb = $("levelBadge");
+    lb.textContent = lvlLabel;
+    lb.className = "level-badge level-" + lvl;
+
+    // Trajectory badge
+    const traj = (ins.careerTrajectory || "").toLowerCase();
+    const trajLabel = { growing: "📈 Đang lên", stable: "➡️ Ổn định", mixed: "🔀 Lộn xộn", declining: "📉 Có dấu hiệu lùi" }[traj] || "";
+    const tb = $("trajBadge");
+    tb.textContent = trajLabel;
+    tb.className = "traj-badge traj-" + traj;
+
+    // Domain
+    if (ins.domainExpertise) {
+      $("domainChip").textContent = ins.domainExpertise;
+      $("insightDomain").style.display = "";
+    }
+
+    // Strengths
+    if (ins.strengths && ins.strengths.length) {
+      $("strengthChips").innerHTML = ins.strengths.map(s => `<span class="chip-strength">${esc(s)}</span>`).join("");
+      $("insightStrengths").style.display = "";
+    }
+
+    // Concerns
+    if (ins.concerns && ins.concerns.length) {
+      $("concernChips").innerHTML = ins.concerns.map(s => `<span class="chip-concern">⚠️ ${esc(s)}</span>`).join("");
+      $("insightConcerns").style.display = "";
+    }
+
+    // Interview focus
+    if (ins.interviewFocus && ins.interviewFocus.length) {
+      $("focusList").innerHTML = ins.interviewFocus.map((q, i) =>
+        `<li class="focus-item"><span class="focus-num">${i+1}</span><span>${esc(q)}</span></li>`
+      ).join("");
+      $("insightFocus").style.display = "";
+    }
+
+    // Meta: salary + notice
+    const metas = [];
+    if (ins.salaryExpectation) metas.push("💰 " + ins.salaryExpectation);
+    if (ins.noticePeriod)       metas.push("⏰ Notice: " + ins.noticePeriod);
+    if (metas.length) {
+      $("metaChips").innerHTML = metas.map(m => `<span class="meta-chip">${esc(m)}</span>`).join("");
+      $("insightMeta").style.display = "";
+    }
+  }
+
+  function initials(name) {
+    const p = name.trim().split(/\s+/);
+    return p.length === 1 ? p[0][0].toUpperCase() : (p[0][0] + p[p.length-1][0]).toUpperCase();
+  }
+
+  function renderContact(d) {
+    const items = [
+      d.email    && { icon: "✉️", val: `<a href="mailto:${esc(d.email)}">${esc(d.email)}</a>` },
+      d.phone    && { icon: "📞", val: esc(d.phone) },
+      d.location && { icon: "📍", val: esc(d.location) },
+      d.linkedin && { icon: "💼", val: `<a href="${esc(d.linkedin)}" target="_blank">LinkedIn</a>` },
+      d.github   && { icon: "🐙", val: `<a href="${esc(d.github)}" target="_blank">GitHub</a>` },
+      d.facebook && { icon: "📘", val: `<a href="${esc(d.facebook)}" target="_blank">Facebook</a>` },
+    ].filter(Boolean);
+    $("contactList").innerHTML = items.map(({icon, val}) =>
+      `<div class="contact-item"><div class="contact-icon">${icon}</div><div class="contact-val">${val}</div></div>`
+    ).join("") || '<span class="empty-tag">Không có thông tin</span>';
+  }
+
+  function formatEduList(items) {
+    return items.map(e => {
+      const parts = [e.degree, e.school, e.major].filter(Boolean);
+      const yrs = (e.startYear || e.endYear) ? ` (${e.startYear || ""}–${e.endYear || ""})` : "";
+      return parts.join(" · ") + yrs;
+    }).filter(Boolean);
+  }
+
+  function renderTags(elId, items, cls) {
+    if (!items.length) { $(elId).innerHTML = '<span class="empty-tag">Không có dữ liệu</span>'; return; }
+    $(elId).innerHTML = items.map(s => `<span class="${cls}">${esc(s)}</span>`).join("");
+  }
+
+  function calcDurationStr(startStr, endStr) {
+    if (!startStr) return '';
+    const parseDateStr = (str) => {
+      if (!str) return new Date();
+      if (str.toLowerCase() === 'present' || str.toLowerCase() === 'hiện tại' || str.toLowerCase() === 'nay') return new Date();
+      let d = new Date(str);
+      if (!isNaN(d)) return d;
+      const m1 = str.match(/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+(\d{4})/i);
+      if (m1) {
+        const months = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+        return new Date(parseInt(m1[2]), months[m1[1].toLowerCase().substring(0,3)]);
+      }
+      const m2 = str.match(/(\d{1,2})[\/\-](\d{4})/);
+      if (m2) return new Date(parseInt(m2[2]), parseInt(m2[1])-1);
+      const m3 = str.match(/(\d{4})/);
+      if (m3) return new Date(parseInt(m3[1]), 0);
+      return NaN;
+    };
+
+    const start = parseDateStr(startStr);
+    const end = parseDateStr(endStr);
+    if (isNaN(start) || isNaN(end) || start > end) return '';
+
+    let months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    months += 1;
+    
+    if (months <= 0) return '';
+    if (months < 12) return months + ' tháng';
+    const years = Math.floor(months / 12);
+    const remain = months % 12;
+    return years + ' năm' + (remain > 0 ? ' ' + remain + ' tháng' : '');
+  }
+
+  function renderWorkHistory(elId, items) {
+    if (!items || !items.length) {
+      $(elId).innerHTML = '<div style="color:var(--muted);font-size:.875rem;font-style:italic">Không có dữ liệu</div>';
+      return;
+    }
+
+    // Group by company (case-insensitive)
+    const groups = [];
+    const keyMap = {};
+    items.forEach(w => {
+      const key = (w.company || '').trim().toLowerCase().replace(/\s+/g,' ');
+      if (!keyMap[key]) {
+        keyMap[key] = { company: w.company, companyTotalDuration: w.companyTotalDuration, roles: [] };
+        groups.push(keyMap[key]);
+      }
+      keyMap[key].roles.push(w);
+    });
+
+    $(elId).innerHTML = groups.map((g, gi) => {
+      // Determine overall date range for company
+      const starts = g.roles.map(r => r.startDate).filter(Boolean);
+      const ends   = g.roles.map(r => r.endDate).filter(Boolean);
+      const earliest = starts.length ? starts[starts.length - 1] : ''; // roles sorted newest first
+      const latest   = ends.length   ? ends[0] : '';
+      const rangeStr = (earliest || latest)
+        ? [earliest, latest].filter(Boolean).join(' – ')
+        : '';
+      const companyDurationStr = g.companyTotalDuration || calcDurationStr(earliest, latest);
+
+      // Nested roles HTML
+      const rolesHtml = g.roles.map((w, ri) => {
+        const roleDate  = [w.startDate, w.endDate].filter(Boolean).join(' – ');
+        const roleDurationStr = w.duration || calcDurationStr(w.startDate, w.endDate);
+        const proj    = w.project     ? `<div class="work-project">&#128196; <strong>Dự án:</strong> ${esc(w.project)}</div>` : '';
+        const desc    = w.description ? `<div class="work-desc">${esc(w.description)}</div>` : '';
+        const achieve = w.achievement ? `<div class="work-achieve">&#11088; ${esc(w.achievement)}</div>` : '';
+        const separator = ri < g.roles.length - 1 ? '<div class="role-sep"></div>' : '';
+        return `
+          <div class="work-role-item">
+            <div class="role-header">
+              ${w.position ? `<span class="work-position" style="align-self:flex-start">&#128084; ${esc(w.position)}</span>` : ''}
+              ${roleDate   ? `<span class="work-period">&#128197; ${esc(roleDate)}</span>` : ''}
+              ${roleDurationStr ? `<span class="work-period" style="background:#fffbeb;border-color:#fde68a;color:#92400e;font-weight:600">&#9201; ${esc(roleDurationStr)}</span>` : ''}
+            </div>
+            ${proj}${desc}${achieve}
+          </div>${separator}`;
+      }).join('');
+
+      return `<div class="tl-item">
+        <div class="tl-left">
+          <div class="tl-dot"></div>
+          ${gi < groups.length - 1 ? '<div class="tl-line"></div>' : ''}
+        </div>
+        <div class="tl-content">
+          <div class="work-card">
+            <div class="work-card-header">
+              <div class="work-company">&#127962; ${esc(g.company || '—')}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                ${rangeStr ? `<span class="work-period">&#128197; ${esc(rangeStr)}</span>` : ''}
+                ${companyDurationStr ? `<span class="work-period" style="background:#eef2ff;border-color:#c7d2fe;color:#4f46e5;font-weight:600">&#9201; ${esc(companyDurationStr)}</span>` : ''}
+              </div>
+            </div>
+            <div class="work-card-body">${rolesHtml}</div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+
+  function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+
+  function collectFormData() {
+    const skills         = [...$("skillsTags").querySelectorAll(".tag")].map(t => t.textContent);
+    const keywords       = [...$("keywordsTags").querySelectorAll(".tag-kw")].map(t => t.textContent);
+    const languages      = [...$("languagesTags").querySelectorAll(".tag-lang")].map(t => t.textContent);
+    const certifications = [...$("certificationsTags").querySelectorAll(".tag-cert")].map(t => t.textContent);
+    const awards         = [...$("awardsTags").querySelectorAll(".tag-award")].map(t => t.textContent);
+
+    const exp = $("experience").value.trim();
+    let experienceYears = "", experienceMonths = "";
+    const ym = exp.match(/(\d+)\s*(?:năm|years?)/i);
+    const mm = exp.match(/(\d+)\s*(?:tháng|months?)/i);
+    if (ym) experienceYears = ym[1];
+    if (mm) experienceMonths = mm[1];
+    if (!ym && !mm && /^\d+$/.test(exp)) experienceYears = exp;
+
+    const summary = parsedData.summary || "";
+
+    return {
+      ...parsedData,
+      name: $("name").value, email: $("email").value, phone: $("phone").value,
+      location: $("location").value, title: $("title").value,
+      currentCompany: $("currentCompany").value,
+      facebook: $("facebook").value, linkedin: $("linkedin").value, github: $("github").value,
+      birthYear: $("birthYear").value, age: null,
+      summary, skills, keywords, languages, certifications, awards,
+      experienceYears, experienceMonths,
+      interviewRound: $("interviewRound").value,
+      interviewDate: $("interviewDate").value,
+      interviewResult: $("interviewResult").value,
+      rating: currentRating || "",
+    };
+  }
+
+  $("btnSave").addEventListener("click", async () => {
+    const btn = $("btnSave");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> Đang lưu...';
+    const fd = new FormData();
+    fd.append("candidateData", JSON.stringify(collectFormData()));
+    fd.append("note", $("hrNote").value);
+    if (currentFile) fd.append("file", currentFile);
+    try {
+      const res = await fetch("/api/candidate/save", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Lỗi lưu");
+      toast("✅ " + (data.message || "Đã lưu thành công"), "success");
+    } catch (err) {
+      toast(err.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = "💾 Lưu ứng viên";
+    }
+  });
+
+  $("btnExport").addEventListener("click", async () => {
+    try {
+      const res = await fetch("/api/candidate/export");
+      if (!res.ok) { const data = await res.json(); throw new Error(parseError(data)); }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = "candidate.xlsx"; a.click();
+      URL.revokeObjectURL(url);
+      toast("📊 Đã tải file Excel", "success");
+    } catch (err) {
+      showAlert(err.message, "error");
+      toast(err.message, "error");
+    }
+  });
+
+  function toast(msg, type) {
+    const el = $("toast");
+    el.textContent = msg;
+    el.className = "toast show " + type;
+    setTimeout(() => el.classList.remove("show"), 3500);
+  }
+</script>
+</body>
+</html>
